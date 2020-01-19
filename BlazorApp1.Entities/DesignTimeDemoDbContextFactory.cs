@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace BlazorApp1.Entities
 {
+    /// <summary>
+    /// This class allows running "dotnet-ef migrations add" command in the .Entities project
+    /// whenever the table changes.
+    /// </summary>
     public class DesignTimeDemoDbContextFactory : IDesignTimeDbContextFactory<DemoDbContext>
     {
         public DemoDbContext CreateDbContext(string[] args)
