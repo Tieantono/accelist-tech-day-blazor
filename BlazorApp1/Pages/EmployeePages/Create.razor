@@ -1,0 +1,64 @@
+﻿@page "/employee/create"
+
+<h3>Create New Employee</h3>
+
+@if (SuccessMessage != null)
+{
+    <div class="alert alert-success">
+        @SuccessMessage
+    </div>
+}
+
+<EditForm Model="Form" OnValidSubmit="OnSubmit">
+    <FluentValidation.FluentValidator></FluentValidation.FluentValidator>
+    <fieldset disabled="@DisableForm">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <InputText id="name" class="form-control" @bind-Value="Form.Name"></InputText>
+            <ValidationMessage For="@(()=> Form.Name)"></ValidationMessage>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <InputText id="email" class="form-control" @bind-Value="Form.Email"></InputText>
+            <ValidationMessage For="@(()=> Form.Email)"></ValidationMessage>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+                Submit
+            </button>
+        </div>
+    </fieldset>
+</EditForm>
+
+@inject DemoDbContext DB
+@code {
+    EmployeeCreateForm Form { set; get; } = new EmployeeCreateForm();
+
+    bool DisableForm { set; get; }
+
+    string SuccessMessage { set; get; }
+
+    async Task OnSubmit()
+    {
+        var employee = new Employee
+        {
+            EmployeeID = Guid.NewGuid(),
+            Email = this.Form.Name,
+            Name = this.Form.Email
+        };
+        DB.Employees.Add(employee);
+
+        SuccessMessage = null;
+        DisableForm = true;
+        
+        StateHasChanged();
+        await Task.Yield();         // Return control to caller method (update UI)
+        
+        await Task.Delay(5000);     // Emulate network delay by 5s DON'T DO THIS AT PRODUCTION!!!
+        await DB.SaveChangesAsync();
+
+        this.Form = new EmployeeCreateForm();   // Reset Form
+        DisableForm = false;
+        SuccessMessage = "Successfully added new employee: " + employee.Name;
+    }
+}

@@ -1,0 +1,46 @@
+﻿@page "/employee"
+
+<h3>Index</h3>
+
+@if (Loading)
+{
+    <p class="text-muted font-italic">
+        Loading data...
+    </p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Employees)
+            {
+                <tr>
+                    <td>@employee.EmployeeID</td>
+                    <td>@employee.Name</td>
+                    <td>@employee.Email</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@inject DemoDbContext DB
+@code {
+
+    List<Employee> Employees { set; get; } = new List<Employee>();
+
+    bool Loading = true;
+
+    override protected async Task OnInitializedAsync()
+    {
+        // don't do this at home! (setidaknya kasih pagination...)
+        this.Employees = await DB.Employees.AsNoTracking().ToListAsync();
+    }
+}
